@@ -1,0 +1,132 @@
+{% extends 'general/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<section class="h-100 gradient-custom-2">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-lg-9 col-xl-12">
+                <div class="card">
+                    <div class="rounded-top text-white d-flex flex-row headline">
+                        <div class="ms-4 mt-5 d-flex flex-column headline_avatar-and-button">
+                            <img src="{{ profile.avatar }}"
+                                alt="Generic placeholder image" class="img-fluid img-thumbnail mt-4 mb-2 avatar">
+                            <button type="button"  data-toggle="modal" data-target="#info-update" class="btn btn-outline-dark btn-edit-profile" data-mdb-ripple-color="dark">
+                                Edit profile
+                            </button>
+                        </div>
+                        <div class="ms-3 headline-personal-info">
+                            <h5>{{ profile.first_name }} {{ profile.last_name }}</h5>
+                            <p>@{{ profile.user.username }}</p>
+                        </div>
+                    </div>
+                    <div class="p-4 text-black headline-info">
+                        <div class="d-flex justify-content-end text-center py-1">
+                            <div class="px-3">
+                                <p class="mb-1 h5">{{ profile.get_followers_number }}</p>
+                                <p class="small text-muted mb-0">Followers</p>
+                            </div>
+                            <div>
+                                <p class="mb-1 h5">{{ profile.get_following_number }}</p>
+                                <p class="small text-muted mb-0">Following</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-4 text-black">
+                        <div class="mb-5">
+                            <p class="lead fw-normal mb-1">About</p>
+                            <div class="p-4" style="background-color: #f8f9fa;">
+                                <p class="font-italic mb-1">Web Developer</p>
+                                <p class="font-italic mb-1">Lives in New York</p>
+                                <p class="font-italic mb-0">Photographer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal modal-xlg " id="info-update"
+     role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-xlg ">
+        <div class="modal-content">
+                <!-- Modal root -->
+            <div class="m-header">
+                <button class="close" data-dismiss="modal">
+                    ×
+                </button>
+
+            </div>
+            <form action="" method="POST" class="ui form" enctype='multipart/form-data'>
+                {% csrf_token %}
+                <div class="row align-items-center justify-content-center">
+                    <div class="image content col-sm-3 info-update">
+                        <div class="ui medium image">
+                            <div>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <img src={{ profile.avatar }}class="rounded-circle" alt="example placeholder" style="width: 200px;" />
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <div class="btn btn-primary btn-rounded">
+                                        <label class="form-label text-white m-1" for="customFile2">Choose file</label>
+                                        <input type="file" class="form-control d-none" id="customFile2" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-1">
+                    </div>
+                    <div class="description col-sm-8 info-update">
+                        <div class="modal-body">
+
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {% for error in form.non_field_errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            {% for field in form.visible_fields %}
+                                {% if field.id_for_label != 'id_avatar'%}
+                                    <div class="form-group">
+                                        {{ field.label_tag }}
+                                        {% if form.is_bound %}
+                                            {% if field.errors %}
+                                                {% render_field field class="form-control is-invalid" %}
+                                                {% for error in field.errors %}
+                                                    <div class="invalid-feedback">
+                                                        {{ error }}
+                                                    </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                {% render_field field class="form-control is-valid" %}
+                                            {% endif %}
+                                        {% else %}
+                                            {% render_field field class="form-control" %}
+                                        {% endif %}
+                                        {% if field.help_text %}
+                                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                            <div class="modal-footer border-top-0 d-flex justify-content-center">
+                                <button type="submit" class="btn btn-success">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

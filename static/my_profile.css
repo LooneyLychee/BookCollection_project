@@ -1,0 +1,65 @@
+.headline{
+    background-color: #000;
+    height:200px;
+}
+
+.headline_avatar-and-button{
+    width: 200px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.avatar{
+    width: 150px;
+    z-index: 1
+}
+
+.btn-edit-profile{
+    z-index: 1;
+}
+
+.headline-info{
+    background-color: #f8f9fa;
+}
+
+.headline-personal-info{
+    margin-top: 130px;
+}
+@media (min-width: 576px){
+.modal-dialog {
+    max-width: 1000px!important;
+    width: 80%!important;
+    margin: 1.75rem auto;
+}
+}
+
+.modal .modal-content {
+    padding: 50px 80px 50px 80px;
+    -webkit-animation-name: modal-animation;
+    -webkit-animation-duration: 0.5s;
+    animation-name: modal-animation;
+    animation-duration: 0.5s;
+}
+
+@-webkit-keyframes modal-animation {
+    from {
+        top: -100px;
+        opacity: 0;
+    }
+    to {
+        top: 0px;
+        opacity: 1;
+    }
+}
+
+@keyframes modal-animation {
+    from {
+        top: -100px;
+        opacity: 0;
+    }
+    to {
+        top: 0px;
+        opacity: 1;
+    }
+}
+

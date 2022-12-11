@@ -20,3 +20,5 @@ def ISBNValidator(raw_isbn):
         raise ValidationError(_(u'Only upper case allowed'))
 
     return True
+
+

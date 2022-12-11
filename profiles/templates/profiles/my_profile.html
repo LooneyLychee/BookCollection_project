@@ -20,6 +20,7 @@
                             <p>@{{ profile.user.username }}</p>
                         </div>
                     </div>
+
                     <div class="p-4 text-black headline-info">
                         <div class="d-flex justify-content-end text-center py-1">
                             <div class="px-3">
@@ -32,14 +33,55 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-body p-4 text-black">
-                        <div class="mb-5">
-                            <p class="lead fw-normal mb-1">About</p>
-                            <div class="p-4" style="background-color: #f8f9fa;">
-                                <p class="font-italic mb-1">Web Developer</p>
-                                <p class="font-italic mb-1">Lives in New York</p>
-                                <p class="font-italic mb-0">Photographer</p>
-                            </div>
+
+                    <div class="row d-flex justify-content-around">
+                        <div class="mb-1 col-sm-4 card-body p-4 text-black d-flex justify-content-around">
+                            <a href='#' class="btn-collection btn" data-mdb-ripple-color="dark">
+                                <div class="p-4">
+                                    <p class="font-weight-bold mb-0">Bookshelf </p>
+                                    <hr>
+                                    <p class="font-italic mb-0">{{ profile.get_my_books_number }}
+                                        {% if profile.get_my_books_number == 1%}
+                                            book
+                                        {% else %}
+                                            books
+                                        {% endif %}
+
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                    <div class="mb-1 col-sm-4 card-body p-4 text-black d-flex justify-content-around">
+                            <a href='#' class="btn-collection btn" data-mdb-ripple-color="dark">
+                                <div class="p-4">
+                                    <p class="font-weight-bold mb-0">Wish List</p>
+                                    <hr>
+                                    <p class="font-italic mb-0">{{ profile.get_wish_list_books_number }}
+                                        {% if profile.get_wish_list_books_number == 1%}
+                                            book
+                                        {% else %}
+                                            books
+                                        {% endif %}
+
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="mb-1 col-sm-4 card-body p-4 text-black d-flex justify-content-around">
+                            <a href='#' class="btn-collection btn" data-mdb-ripple-color="dark">
+                                <div class="p-4">
+                                    <p class="font-weight-bold mb-0">Favorites books </p>
+                                    <hr>
+                                    <p class="font-italic mb-0">{{ profile.get_favorites_books_number }}
+                                        {% if profile.get_favorites_books_number == 1 %}
+                                            book
+                                        {% else %}
+                                            books
+                                        {% endif %}
+
+                                    </p>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </div>

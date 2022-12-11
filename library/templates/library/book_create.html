@@ -1,0 +1,9 @@
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ book_form.as_p }}
+    {{ authors_form.as_p }}
+    {{ publisher_form.as_p }}
+    {{ series_form.as_p }}
+    {{ purchase_form.as_p }}
+    <input type="submit" />
+</form>

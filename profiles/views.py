@@ -15,12 +15,6 @@ def my_profile_view(request):
         if form.is_valid():
             form.save()
             valid = True
-            """ changed = {
-                 'firstname': request.POST.get('firstname'),
-                 'lastname': request.POST.get('lastname'),
-                 'username': request.POST.get('username'),
-                 'avatar': request.POST.get('avtar'),
-             }"""
 
     context = {
         'profile': obj,

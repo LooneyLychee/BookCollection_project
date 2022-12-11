@@ -29,7 +29,7 @@
 .modal-dialog {
     max-width: 1000px!important;
     width: 80%!important;
-    margin: 1.75rem auto;
+    margin: 7.75rem auto;
 }
 }
 
@@ -62,4 +62,12 @@
         opacity: 1;
     }
 }
+
+a.btn-collection {
+    color: #000000;
+    width: 1000px;
+    background-color: #f8f9fa;
+}
+
+a.btn-collection:hover {font-size:110%;}
 

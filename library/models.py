@@ -2,16 +2,16 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from .validators import ISBNValidator
+from multiselectfield import MultiSelectField
+import datetime
+from profiles.models import Profile
 
 
 class Author(models.Model):
-    author = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, blank=True, default="")
 
     def __str__(self):
-        return f'{self.author}'
-
-    def get_books_number(self, collection):
-        return self.book_set.all().filter(collection=collection).count()
+        return f'{self.name}'
 
 
 CATEGORY_CHOICES = (
@@ -76,100 +76,134 @@ CATEGORY_CHOICES = (
 )
 
 
-class Category(models.Model):
-    class Meta:
-        verbose_name_plural = "categories"
-
-    category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
-
-    def __str__(self):
-        return f'{self.category.title()}'
-
-    def get_books_number(self, collection):
-        return self.book_set.all().filter(collection=collection).count()
-
-
 class Tag(models.Model):
     tag = models.CharField(max_length=100)
 
     def __str__(self):
         return f'{self.tag}'
 
-    def get_books_number(self, collection):
-        return self.book_set.all().filter(collection=collection).count()
-
 
 COLLECTION_CHOICES = (
     ('bookshelf', 'bookshelf'),
-    ('wish_list', 'wish_list')
+    ('wish_list', 'wish_list'),
+    ('favorites', 'favorites')
 )
 
 
-class Collection(models.Model):
-    collection = models.CharField(max_length=20, choices=COLLECTION_CHOICES)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner')
+class PurchaseInfo(models.Model):
+    class Meta:
+        verbose_name_plural = "Purchase_Info"
+
+    purchase_date = models.DateField(blank=True, default="")
+    price = models.FloatField(validators=[MinValueValidator(0)], blank=True, default="")
 
     def __str__(self):
-        return f'{self.collection} - {self.owner}'
-
-    def get_books_number(self):
-        return self.book_set.all().count()
+        return f'{self.purchase_date}'
 
 
-class PurchaseInfo(models.Model):
-    purchase_date = models.DateField(blank=True)
-    price = models.DateField(blank=True)
+class Series(models.Model):
+    name = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.name}'
+
+
+class Publisher(models.Model):
+    name = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.name}'
 
 
 class Book(models.Model):
-    collections = models.ManyToManyField(Collection, related_name='collections')
-
     # basic info
     title = models.CharField(max_length=100)
-    authors = models.ManyToManyField(Author, blank=True)
-    series = models.CharField(max_length=100, null=True, blank=True)
+    authors = models.ManyToManyField(Author, blank=True, related_name='book')
+    series = models.ForeignKey(Series, on_delete=models.CASCADE, null=True, blank=True, related_name='book')
     volume = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0.01)])
 
     # publication info
-    publisher = models.CharField(max_length=50, blank=True)
-    publication_date = models.DateField(blank=True)
-    identifier = models.CharField(max_length=13, null=True, blank=True, validators=[ISBNValidator])
+    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, null=True, blank=True, related_name='book')
+    publication_date = models.DateField(blank=True, null=True)
+    identifier = models.CharField(max_length=13, blank=True, validators=[ISBNValidator], null=True)
 
     # visual info
-    page_count = models.PositiveSmallIntegerField(blank=True)
-    height = models.FloatField(validators=[MinValueValidator(0.01)], blank=True)
-    width = models.FloatField(blank=True, validators=[MinValueValidator(0.01)])
-    thickness = models.FloatField(blank=True, validators=[MinValueValidator(0.01)])
+    page_count = models.PositiveSmallIntegerField(blank=True, default="", null=True)
+    height = models.FloatField(validators=[MinValueValidator(0.01)], blank=True, null=True)
+    width = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0.01)])
+    thickness = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0.01)])
     cover = models.ImageField(default='https://i.ibb.co/tKtFPgr/blank-profile-picture-g9a1ddb035-640.png', upload_to='avatars/')
     # find cover
 
     # content info
-    categories = models.ManyToManyField(Category, blank=True)
-    description = models.CharField(max_length=300, blank=True)
-    tags = models.ManyToManyField(Tag, blank=True)
+    categories = MultiSelectField(choices=CATEGORY_CHOICES, blank=True, max_choices=100, max_length=40, null=True)
+    description = models.CharField(max_length=300, blank=True, null=True)
+    tags = models.ManyToManyField(Tag, blank=True, related_name='book')
 
     # purchase info
-    purchase_info = models.OneToOneField(PurchaseInfo, on_delete=models.CASCADE, blank=True)
+    purchase_info = models.OneToOneField(PurchaseInfo, on_delete=models.CASCADE, null=True, blank=True, related_name='book')
 
     # user personal info
-    rating = models.PositiveSmallIntegerField(blank=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
-    notes = models.CharField(max_length=300, blank=True)
+    rating = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    notes = models.CharField(max_length=300, blank=True, null=True)
 
     update = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.authors}: {self.title}'
+        return f'{self.title}'
+
+
+class Collection(models.Model):
+    name = models.CharField(max_length=20, choices=COLLECTION_CHOICES)
+    owner = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='collection')
+    books = models.ManyToManyField(Book, blank=True)
+
+    def __str__(self):
+        return f"{str(self.owner)}: {self.name}"
+
+    def get_books_number(self):
+        return self.books.all().count()
+
+    def get_authors_number(self):
+        books = self.books.exclude(authors__isnull=True)
+        authors = []
+        for book in books:
+            authors += list(book.authors.all())
+
+        return len(set(authors))
+
+    def get_series_number(self):
+        return len(set(self.books.exclude(series__isnull=True).values_list('series')))
+
+    def get_publisher_number(self):
+        return len(set(self.books.exclude(publisher__isnull=True).values_list('publisher')))
+
+    def get_books_read_number(self):
+        read_info = self.books.exclude(read_info__isnull=True).values_list('read_info')
+        return len(set(read_info.values_list('volume')))
 
 
 class ReadInfo(models.Model):
-    volume = models.ForeignKey(Book, on_delete=models.CASCADE)
+    class Meta:
+        verbose_name_plural = "Read_Info"
+
+    volume = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="read_info")
     start_date = models.DateField(blank=True)
     end_date = models.DateField(blank=True)
 
+    def __str__(self):
+        return f'{self.volume}: {self.start_date} - {self.end_date}'
+
 
 class LentInfo(models.Model):
+    class Meta:
+        verbose_name_plural = "Lent_Info"
+
     volume = models.ForeignKey(Book, on_delete=models.CASCADE)
     lent_date = models.DateField(blank=True)
     return_date = models.DateField(blank=True)
     borrower = models.CharField(max_length=100, null=True)
+
+    def __str__(self):
+        return f'{self.borrower} - {self.volume}'

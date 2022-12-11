@@ -38,8 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'profiles',
+    'django_rename_app',
     'widget_tweaks',
-    'liblary',
+    'library',
+    'multiselectfield',
+
 ]
 
 MIDDLEWARE = [

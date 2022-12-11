@@ -3,9 +3,13 @@ from .models import *
 # Register your models here.
 
 admin.site.register(Author)
-admin.site.register(Collection)
-admin.site.register(Category)
 admin.site.register(Book)
 admin.site.register(Tag)
 admin.site.register(LentInfo)
+admin.site.register(ReadInfo)
 admin.site.register(PurchaseInfo)
+admin.site.register(Series)
+admin.site.register(Publisher)
+admin.site.register(Collection)
+
+

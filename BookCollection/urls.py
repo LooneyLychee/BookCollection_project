@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from .views import home_view
 from profiles import urls as profiles_urls
+from library import urls as library_urls
 from django.contrib.staticfiles.storage import staticfiles_storage
 
 
@@ -11,6 +12,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_view, name='home_view'),
     path('profiles/', include(profiles_urls, namespace='profiles')),
+    path('library/', include(library_urls, namespace='library')),
 
 ]
 

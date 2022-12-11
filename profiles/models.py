@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from .utils import get_random_code
 from django.template.defaultfilters import slugify
+import datetime
 
 
 class Profile(models.Model):
@@ -18,6 +19,58 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}-{self.created}"
+
+    def get_my_books_number(self):
+        collection = list(self.collection.filter(name="bookshelf"))
+        try:
+            return collection[0].get_books_number()
+        except:
+            return 'no date'
+
+    def get_wish_list_books_number(self):
+        collection = list(self.collection.filter(name="wish_list"))
+        try:
+            return collection[0].get_books_number()
+        except:
+            return 'no date'
+
+    def get_favorites_books_number(self):
+        collection = list(self.collection.filter(name="favorites"))
+        try:
+            return collection[0].get_books_number()
+        except:
+            return 'no date'
+
+    def get_all_authors(self):
+        return self.collection.values('books__authors__name')
+
+    def get_authors_number_bookshelf(self):
+        collection = list(self.collection.filter(name="bookshelf"))
+        try:
+            return collection[0].get_authors_number()
+        except:
+            return 'no date'
+
+    def get_series_number_bookshelf(self):
+        collection = list(self.collection.filter(name="bookshelf"))
+        try:
+            return collection[0].get_series_number()
+        except:
+            return 'no date'
+
+    def get_publisher_number_bookshelf(self):
+        collection = list(self.collection.filter(name="bookshelf"))
+        try:
+            return collection[0].get_publisher_number()
+        except:
+            return 'no date'
+
+    def get_books_read_number_bookshelf(self):
+        collection = list(self.collection.filter(name="bookshelf"))
+        try:
+            return collection[0].get_books_read_number()
+        except:
+            return 'no date'
 
     def get_followers(self):
         return self.followers.all()
@@ -40,6 +93,7 @@ class Profile(models.Model):
             to_slug = str(self.user.username)
 
         self.slug = to_slug
+        self.update = datetime.datetime.now()
         super().save(*args, **kwargs)
 
 

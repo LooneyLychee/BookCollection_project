@@ -10,7 +10,7 @@ class Profile(models.Model):
     last_name = models.CharField(max_length=150, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     email = models.EmailField(max_length=150, blank=True)
-    avatar = models.ImageField(default='https://i.ibb.co/tKtFPgr/blank-profile-picture-g9a1ddb035-640.png', upload_to='avatars/')
+    avatar = models.CharField(default='https://i.ibb.co/tKtFPgr/blank-profile-picture-g9a1ddb035-640.png', max_length=300)
     following = models.ManyToManyField(User, blank=True, related_name='following')
     followers = models.ManyToManyField(User, blank=True, related_name='followers')
     slug = models.SlugField(unique=True, blank=True)
@@ -43,6 +43,57 @@ class Profile(models.Model):
 
     def get_all_authors(self):
         return self.collection.values('books__authors__name')
+
+    def get_author(self, name):
+        collections = self.collection.all()
+
+        for collection in collections:
+            books = collection.books.all()
+            for book in books:
+                authors = book.authors.all()
+                for author in authors:
+                    if author.name == name:
+                        return author
+
+    def get_series(self, name):
+        collections = self.collection.all()
+
+        for collection in collections:
+            books = collection.books.all()
+            for book in books:
+                try:
+                    series = book.series.name
+                    if series == name:
+                        return book.series
+                except:
+                    pass
+
+    def get_publisher(self, name):
+        # print(name)
+        collections = self.collection.all()
+
+        for collection in collections:
+            books = collection.books.all()
+            for book in books:
+                try:
+                    publisher = book.publisher.name
+                    if publisher == name:
+                        return book.publisher
+                except:
+                    pass
+
+    def get_collection(self, name):
+        # print(name)
+        return self.collection.get(name=name)
+
+    def get_bookshelf(self):
+        return self.get_collection('bookshelf')
+
+    def get_wish_list(self):
+        return self.get_collection('wish_list')
+
+    def get_favorites(self):
+        return self.get_collection('favorites')
 
     def get_authors_number_bookshelf(self):
         collection = list(self.collection.filter(name="bookshelf"))
@@ -95,6 +146,7 @@ class Profile(models.Model):
         self.slug = to_slug
         self.update = datetime.datetime.now()
         super().save(*args, **kwargs)
+
 
 
 class Follow(models.Model):

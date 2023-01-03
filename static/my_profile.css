@@ -1,6 +1,6 @@
 .headline{
     background-color: #000;
-    height:200px;
+    height:100%;
 }
 
 .headline_avatar-and-button{
@@ -11,6 +11,7 @@
 
 .avatar{
     width: 150px;
+    min-width: 100px;
     z-index: 1
 }
 
@@ -19,12 +20,10 @@
 }
 
 .headline-info{
-    background-color: #f8f9fa;
+    background-color: #d2d2d2;
 }
 
-.headline-personal-info{
-    margin-top: 130px;
-}
+
 @media (min-width: 576px){
 .modal-dialog {
     max-width: 1000px!important;
@@ -64,10 +63,121 @@
 }
 
 a.btn-collection {
-    color: #000000;
+    color: #ffffff;
     width: 1000px;
-    background-color: #f8f9fa;
+    background-color: #666666;
 }
 
 a.btn-collection:hover {font-size:110%;}
+
+.file-upload-btn {
+    width: 100%;
+    margin: auto;
+    color: #fff;
+    background: #1FB264;
+    border: none;
+    padding: 5px;
+    border-radius: 2px;
+    border-bottom: 2px solid #15824B;
+    outline: none;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.file-upload-btn:hover {
+  background: #1AA059;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.file-upload-input {
+    display: none;
+}
+
+
+.remove-btn {
+    width: 100%;
+    margin: auto;
+    color: #fff;
+    background: #cd4535;
+    border: none;
+    padding: 5px;
+    border-radius: 2px;
+    border-bottom: 2px solid #b02818;
+    transition: all .2s ease;
+    outline: none;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.remove-btn:hover {
+  background: #c13b2a;
+  color: #ffffff;
+  transition: all .2s ease;
+  cursor: pointer;
+}
+
+
+.uploaded-image {
+    display: none;
+    text-align: center;
+    position: relative;
+
+}
+
+.actual-image {
+    text-align: center;
+    position: relative;
+}
+
+.default-image {
+    text-align: center;
+    position: relative;
+    display: None;
+}
+
+
+.avatar-preview-style{
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+}
+
+
+.file-upload-image {
+  margin: auto;
+}
+
+.update-profile-btn{
+    width: 250px;
+}
+
+.info-update{
+    min-width: 300px;
+}
+
+.submit-default{
+    display: None;
+}
+
+.btn-see-profile{
+    background-color: transparent;
+    color: white;
+    border-color: white;
+}
+
+.profile-card{
+    background-color: #666666;
+    color: #ffffff;
+}
+.MultiCarousel {  overflow: hidden; padding: 15px; width: 100%; position:relative; }
+    .MultiCarousel .MultiCarousel-inner { transition: 1s ease all;  }
+    .MultiCarousel .MultiCarousel-inner .item {width: 100% !important}
+        .MultiCarousel .MultiCarousel-inner .item > div { text-align: center; padding:10px; margin:10px; height: 270px!important; background:#666666; color:#ffffff;}
+    .MultiCarousel .leftLst, .MultiCarousel .rightLst { position:absolute; border-radius:50%;top:calc(50% - 20px); }
+    .MultiCarousel .leftLst { left:0; }
+    .MultiCarousel .rightLst { right:0; }
+
+        .MultiCarousel .leftLst.over, .MultiCarousel .rightLst.over { pointer-events: none; background:#ccc; }
+
 

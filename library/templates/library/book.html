@@ -1,0 +1,158 @@
+{% extends 'general/base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+    <div class="form-row mr-2 ml-2  mt-2">
+        <a href="{% url 'profiles:profile' profile_id=owner.id %}"> {{ owner.username }} </a>  &raquo;
+        <a href="{% url 'library:book-list' collection_id=collection.id %}"> {{ collection.name }} </a> &raquo;
+        {{ book.title }}
+    </div>
+    <div class="form-row mt-2  mt-4 content justify-content-center">
+        <div class="image content justify-content-center align-items-center col-sm-1 mt-2 info-update">
+            <div class="image-preview align-items-center justify-content-center">
+                <div class="actual-image mr-ml-autor">
+                    <img class="cover-preview-style" src="{{ book.cover }}" alt="your image" />
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8 mr-6">
+            <div class="form-row mt-2 bg-dark text-white">
+                <div class="col ml-2 mr-2 mb-0 form-group">
+                    <h2 class="w-100"> {{ book.title }} </h2>
+                </div>
+                <div class="form-group mt-auto mb-auto">
+                {% if user.is_authenticated and user == owner%}
+                    <div class="col--md-auto d-flex justify-content-end p-2 mt-auto mb-auto form-group">
+                        <a href="{% url 'library:book-update' book_id=book.id %}" book_id=book.id collection_id=collection.id %}">
+                            <button type="button" class="btn btn-info">Update</button>
+                        </a>
+                    </div>
+                    <div class="col-md-auto d-flex justify-content-end p-2 mt-auto mb-auto form-group">
+                        <a href="{% url 'library:book-delete' book_id=book.id collection_id=collection.id %}">
+                            <button type="button" class="btn btn-info">Delete</button>
+                        </a>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-sm ml-2 mr-2 form-group">
+                    <h5 class="mt-2">{%  for author in book.authors.all%}
+                        <a href="{% url 'library:book-list' collection_id=collection.id%}?authors={{ author.pk }}"> {{ author}}, </a>
+                    {% endfor %}</h5>
+                </div>
+            </div>
+        <hr class="w-100">
+            <div class="form-row mt-2">
+                <div class="col-sm ml-2 mr-2 form-group">
+                    <h6 class="font-weight-bold">Series:</h6>
+                    {% if book.series%}
+                        <h6>
+                            <a href="{% url 'library:book-list' collection_id=collection.id%}?series={{ book.series.pk }}">{{ book.series }}</a>
+                            {% if book.volume %}
+                                [{{ book.volume }}]
+                            {% endif %}
+                        </h6>
+                    {% else %}
+                        <h6>---</h6>
+                    {% endif %}
+                </div>
+            </div>
+        <hr class="w-100">
+            <div class="form-row mt-2">
+                <div class="col-sm ml-2 mr-2 form-group">
+                    <h6 class="font-weight-bold">Rating:</h6>
+                    {% if book.rating is not None%}
+                        <h6>{{ book.rating }}/5</h6>
+                    {% else %}
+                        <h6>---</h6>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr clas="w-100">
+
+    {% if book.description %}
+        <div class="form-row mt-2 mr-4 ml-4  mt-4">
+            <h6 class="font-weight-bold">Description:</h6><h6>{{ book.description }} </h6>
+        </div>
+        <hr>
+    {% endif %}
+    {% if book.categories %}
+        <div class="form-row mt-2 ml-4 mr-4  mt-4">
+        <div class="col">
+            <h6 class="font-weight-bold">Categories:</h6>
+            <div class="row ml-1 mr-1">
+            {% for category in book.categories %}
+            <a href="{% url 'library:book-list' collection_id=collection.id %}?categories={{ category }}">
+                <h6>{{ category }}, </h6>
+            </a>
+            {% endfor %}
+        </div>
+        </div>
+        </div>
+        <hr>
+    {% endif %}
+
+    {% if book.publisher or book.identifier %}
+        <div class="form-row mt-2 ml-4 mr-4">
+            {% if book.publisher %}
+                <div class="col-sm form-group">
+                    <h6 class="font-weight-bold">Publisher:</h6>
+                    <a href="{% url 'library:book-list'  collection_id=collection.id %}?publisher={{ book.publisher.pk }}">
+                        <h6>{{ book.publisher }}</h6>
+                    </a>
+                </div>
+            {% endif %}
+            {% if book.identifier %}
+                <div class="col-sm form-group">
+                    <h6 class="font-weight-bold">ISBN:</h6><h6>{{ book.identifier }}</h6>
+                </div>
+            {% endif %}
+        </div>
+        <hr>
+    {% endif %}
+
+    {% if book.page_count or book.width or book.height or book.thickness %}
+        <div class="form-row mt-2 ml-4 mr-4">
+            {% if book.page_count %}
+                <div class="col-sm form-group">
+                    <h6 class="font-weight-bold">Page:</h6><h6>{{ book.page_count }}</h6>
+                </div>
+            {% endif %}
+            {% if book.width or book.height or book.thickness %}
+                <div class="col-sm form-group">
+                    <h6 class="font-weight-bold">
+                        Dimension[ {% if book.width %} width x {% endif %}{% if book.height %} height x {% endif %}{% if book.thickness %} x thickness]{% endif %}:
+                    </h6><h6>
+                        {% if book.width %} book.width x {% endif %}{% if book.height %} book.height x {% endif %}{% if book.thickness %} x book.thickness]{% endif %}
+                </h6>
+                </div>
+            {% endif %}
+        </div>
+        <hr>
+    {% endif %}
+
+    {% if book.purchase_info %}
+        <div class="form-row mt-2 ml-4 mr-4">
+            {% if book.purchase_info.purchase_date %}
+                <div class="col-sm form-group">
+                    <h6 class="font-weight-bold">Purchase date:</h6><h6>{{ book.purchase_info.purchase_date }}</h6>
+                </div>
+            {% endif %}
+            {% if book.purchase_info.price %}
+                <div class="col-sm form-group">
+                    <h6 class="font-weight-bold">Purchase price:</h6><h6>{{ book.purchase_info.price}}</h6>
+                </div>
+            {% endif %}
+        </div>
+        <hr>
+    {% endif %}
+
+    {% if book.notes %}
+        <div class="form-row mt-2 ml-4 mr-4  mt-4">
+            <h6 class="font-weight-bold">Notes:</h6> <h6>{{ book.notes }} </h6>
+        </div>
+    {% endif %}
+
+{% endblock %}

@@ -14,18 +14,36 @@
     <link rel="stylesheet" href="{% static '/navbar.css' %}">
     <link rel="stylesheet" href="{% static '/my_profile.css' %}">
     <link rel="stylesheet" href="{% static '/general.css' %}">
+    <link rel="stylesheet" href="{% static '/library.css' %}">
+
 
 </head>
 
 <body>
     {%  include 'general/navbar.html' %}
-    {% block content %}
+    <section class="h-100 gradient-custom-2">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col col-lg-9 col-xl-12">
+                    <div class="card">
+                        {% block content %}
 
-    {% endblock %}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="{% static '/library.js' %}"></script>
+<script src="{% static '/profile.js' %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script>
-
+<script src="https://unpkg.com/htmx.org@1.5.0"
+        integrity="sha384-oGA+prIp5Vchu6we2YkI51UtVzN9Jpx2Z7PnR1I78PnZlN8LkrCT4lqqqmDkyrvI"
+        crossorigin="anonymous"></script>
+<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </html>
 
 

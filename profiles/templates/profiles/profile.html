@@ -1,0 +1,237 @@
+{% extends 'general/base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+    <div class="rounded-top text-white d-flex flex-row align-items-end headline">
+        <div class="ms-4 mt-5 d-flex flex-column headline_avatar-and-button">
+            <img src="{{ profile.avatar }}"
+                 alt="Generic placeholder image" class="img-fluid img-thumbnail mt-4 mb-2 avatar">
+        </div>
+        <div class="ms-3 headline-personal-info">
+            <h5>{{ profile.first_name }} {{ profile.last_name }}</h5>
+            <p>@{{ profile.user.username }}</p>
+        </div>
+    </div>
+
+    <div class="p-4 text-black headline-info">
+        <div class="row">
+            <div class="col-auto">
+                {% if profile_owner %}
+                    <button type="button"  data-toggle="modal" data-target="#info-update" class="btn btn-outline-dark btn-edit-profile" data-mdb-ripple-color="dark">
+                        Edit profile
+                    </button>
+                {% elif user.is_authenticated %}
+                    <form action="" class='btn-edit-profile' method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-dark w-100" data-mdb-ripple-color="dark">
+                            {% if is_followers %}
+                                Unfollow
+                            {% else %}
+                                Follow
+                            {% endif %}
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+            <div class="col d-flex justify-content-end text-center py-1">
+                <div class="px-3">
+                    <p class="mb-1 h5">{{ profile.get_followers_number }}</p>
+                    <p class="small text-muted mb-0">Followers</p>
+                </div>
+                <div class="px-3">
+                    <p class="mb-1 h5">{{ profile.get_following_number }}</p>
+                    <p class="small text-muted mb-0">Following</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="w-100%">
+    <h3 class="mt-1 ml-2">Collection</h3>
+    <div class="row d-flex justify-content-around">
+        <div class="mb-1 col-sm-4 card-body p-4 text-black d-flex justify-content-around">
+            <a href='{% url 'library:book-list' collection_id=profile.get_bookshelf.id %}' class="btn-collection btn" data-mdb-ripple-color="dark">
+                <div class="p-4">
+                    <p class="font-weight-bold mb-0">Bookshelf </p>
+                    <hr>
+                    <p class="font-italic mb-0">{{ profile.get_my_books_number }}
+                        {% if profile.get_my_books_number == 1%}
+                            book
+                        {% else %}
+                            books
+                        {% endif %}
+                    </p>
+                </div>
+            </a>
+        </div>
+        <div class="mb-1 col-sm-4 card-body p-4 text-black d-flex justify-content-around">
+            <a href='{% url 'library:book-list' collection_id=profile.get_wish_list.id %}' class="btn-collection btn" data-mdb-ripple-color="dark">
+                <div class="p-4">
+                    <p class="font-weight-bold mb-0">Wish List</p>
+                    <hr>
+                    <p class="font-italic mb-0">{{ profile.get_wish_list_books_number }}
+                        {% if profile.get_wish_list_books_number == 1%}
+                            book
+                        {% else %}
+                            books
+                        {% endif %}
+                    </p>
+                </div>
+            </a>
+        </div>
+        <div class="mb-1 col-sm-4 card-body p-4 text-black d-flex justify-content-around">
+            <a href='{% url 'library:book-list' collection_id=profile.get_favorites.id %}' class="btn-collection btn" data-mdb-ripple-color="dark">
+                <div class="p-4">
+                    <p class="font-weight-bold mb-0">Favorites books </p>
+                    <hr>
+                    <p class="font-italic mb-0">{{ profile.get_favorites_books_number }}
+                        {% if profile.get_favorites_books_number == 1 %}
+                            book
+                        {% else %}
+                            books
+                        {% endif %}
+                    </p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <hr class="w-100%">
+    <h3 class="mt-1 ml-2">Followers </h3>
+    <div class="row d-flex justify-content-center">
+        <div class="MultiCarousel" data-items="1,2,3,4" data-slide="1" id="MultiCarousel"  data-interval="1000">
+            <div class="MultiCarousel-inner d-flex align-items-center justify-content-center">
+                {% for follower in profile.followers.all %}
+                <div class="item">
+                    <div class="pad15">
+                        <img src="{{ follower.profile.avatar }}" class="img-fluid img-thumbnail mt-2 mb-2 avatar" >
+                        <div class="h-100">
+                            <h6 class="mb-0 mt-0">{{ follower.profile.first_name }} {{ follower.profile.last_name }}</h6>
+                            <span>@{{ follower.username }}</span>
+                            <div class="button mt-2 d-flex flex-row align-items-center">
+                                <a href="{% url 'profiles:profile' profile_id=follower.profile.pk %}" class=" w-100">
+                                    <button class="btn btn-sm btn-see-profile btn-outline-primary w-100">See profile</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="btn btn-primary leftLst"><</button>
+            <button class="btn btn-primary rightLst">></button>
+        </div>
+	</div>
+
+    <hr class="w-100%">
+    <h3 class="mt-1 ml-2">Following </h3>
+    <div class="row d-flex justify-content-center">
+        <div class="MultiCarousel" data-items="1,2,3,4" data-slide="1" id="MultiCarousel"  data-interval="1000">
+            <div class="MultiCarousel-inner d-flex align-items-center justify-content-center">
+                {% for follower in profile.following.all %}
+                <div class="item">
+                    <div class="pad15">
+                        <img src="{{ follower.profile.avatar }}" class="img-fluid img-thumbnail mt-2 mb-2 avatar" >
+                        <div class="h-100">
+                            <h6 class="mb-0 mt-0">{{ follower.profile.first_name }} {{ follower.profile.last_name }}</h6>
+                            <span>@{{ follower.username }}</span>
+                            <div class="button mt-2 d-flex flex-row align-items-center">
+                                <a href="{% url 'profiles:profile' profile_id=follower.profile.pk %}" class=" w-100">
+                                    <button class="btn btn-sm btn-see-profile btn-outline-primary w-100">See profile</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="btn btn-primary leftLst"><</button>
+            <button class="btn btn-primary rightLst">></button>
+        </div>
+	</div>
+<div class="modal modal-xlg " id="info-update"
+     role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-xlg ">
+        <div class="modal-content">
+                <!-- Modal root -->
+            <div class="m-header">
+                <button class="close" data-dismiss="modal">
+                    ×
+                </button>
+
+            </div>
+            <div class="modal-body">
+                <form action="" method="POST" class="ui form" enctype='multipart/form-data'>
+                    {% csrf_token %}
+                    <div class="row align-items-center justify-content-center">
+                        <div class="description col-sm-7 info-update">
+
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {% for error in form.non_field_errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            {% for field in form.visible_fields %}
+                                {% if field.id_for_label != 'id_avatar' and field.id_for_label != 'id_image' %}
+                                    <div class="form-group">
+                                        {{ field.label_tag }}
+                                        {% if form.is_bound %}
+                                            {% if field.errors %}
+                                                {% render_field field class="form-control is-invalid" %}
+                                                {% for error in field.errors %}
+                                                    <div class="invalid-feedback">
+                                                        {{ error }}
+                                                    </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                {% render_field field class="form-control is-valid" %}
+                                            {% endif %}
+                                        {% else %}
+                                            {% render_field field class="form-control" %}
+                                        {% endif %}
+                                        {% if field.help_text %}
+                                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+
+                            <button class="file-upload-btn mt-2" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button>
+                            <input class="file-upload-input" type='file' name="image" id="id_image" onchange="readURL(this);" accept="image/*" />
+
+                            <button type="button" onclick="removeUpload()" class="mt-2 remove-btn">Set default</button>
+                        </div>
+
+                        <div class="image content align-items-center col-sm-3 mt-2 info-update">
+                            <div class="image-preview align-items-center justify-content-center">
+                                <div class="actual-image avatar mr-ml-autor">
+                                    <img class="avatar-preview-style" src="{{ profile.avatar }}" alt="your image" />
+                                </div>
+                                <div class="uploaded-image mr-2">
+                                    <img class="file-upload-image avatar-preview-style" src="#" alt="your image" />
+                                </div>
+                                <div class="default-image mr-ml-auto">
+                                    <img class="avatar-preview-style" src="https://i.ibb.co/tKtFPgr/blank-profile-picture-g9a1ddb035-640.png" alt="your image" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="modal-footer border-top-0 d-flex justify-content-center" style="width:100%">
+                            <button type="submit"  class="btn btn-success update-profile-btn">Submit</button>
+                        </div>
+                        <div class="modal-footer border-top-0 d-flex justify-content-center" style="width:100%">
+                            <button type="submit"  name='submit-default', class="btn btn-success submit-default">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

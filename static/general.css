@@ -1,3 +1,12 @@
 body{
     background-color: #c3cbff;
+    word-break: break-word;
+}
+
+h1{
+    background-color: #343a40!important;
+    color: white;
+    padding: 5px;
+    border-radius: 2%;
+    width: 100%;
 }

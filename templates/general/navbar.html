@@ -1,11 +1,29 @@
 {% load static %}
 <div class="header-blue">
     <nav class="navbar navbar-dark navbar-expand-md navigation-clean-search">
-        <div class="container"><div class="navbar-title">BookCollection </div><button class="navbar-toggler" data-toggle="collapse" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+        <div class="container">
+            <div class="navbar-title">BookCollection</div>
+            <button class="navbar-toggler" data-toggle="collapse" data-target="#navcol-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navcol-1">
-                <form class="form-inline mr-auto" target="_self">
-                    <div class="form-group"><label for="search-field"><i class="fa fa-search"></i></label><input class="form-control search-field" type="search" name="search" id="search-field" placeholder="Find user"></div>
-                </form><span class="navbar-text"> <a href="#" class="login">Log In</a></span><a class="btn btn-light action-button" role="button" href="#">Sign Up</a></div>
-        </div>
+                <form class="form-inline mr-auto" action={% url 'profiles:profile-list'%} method="get" >
+                    <div class="form-group">
+                        <label for="search-field">
+                            <i class="fa fa-search"></i>
+                        </label>
+                        <input class="form-control search-field" type="search" name="search" id="search-field" placeholder="Find user">
+                    </div>
+                </form>
+                {% if not user.is_authenticated %}
+                    <span class="navbar-text"> <a href="http://127.0.0.1:8000/accounts/login/" class="login">Log In</a></span><a class="btn btn-light action-button" role="button" href="http://127.0.0.1:8000/accounts/signup/">Sign Up</a></div>
+                {% else %}
+                    <span class="navbar-text mr-3"> <a href="{% url 'library:book-create' %}" class="logout">Add book</a></span>
+                    <span class="navbar-text mr-3"> <a href="{% url 'profiles:profile' profile_id=request.user.id %}" class="logout">My profile</a></span>
+                   <span class="navbar-text"> <a href="http://127.0.0.1:8000/logout" class="logout">Logout</a></span>
+                {% endif %}
+            </div>
+
     </nav>
 </div>

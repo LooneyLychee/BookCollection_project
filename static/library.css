@@ -1,0 +1,19 @@
+#author-btn{
+    width: 100%;
+}
+
+.cover-preview-style{
+    width: 171px;
+    height: 250px;
+    object-fit: cover;
+}
+
+.cover-style{
+    width: 119px;
+    height: 175px;
+    object-fit: cover;
+}
+
+.cover-btn{
+    width: 171px;
+}

@@ -5,6 +5,7 @@ from .validators import ISBNValidator
 from multiselectfield import MultiSelectField
 import datetime
 from profiles.models import Profile
+from django_select2.forms import Select2MultipleWidget
 
 
 class Author(models.Model):
@@ -75,6 +76,18 @@ CATEGORY_CHOICES = (
                        ('young adult nonfiction', 'young adult nonfiction')
 )
 
+RATING_CHOICES = (
+    ('1', '1'),
+    ('2', '2'),
+    ('3', '3'),
+    ('4', '4'),
+    ('5', '5'),
+    ('6', '6'),
+    ('7', '7'),
+    ('8', '8'),
+    ('9', '9'),
+    ('10', '10'),
+)
 
 class Tag(models.Model):
     tag = models.CharField(max_length=100)
@@ -94,8 +107,8 @@ class PurchaseInfo(models.Model):
     class Meta:
         verbose_name_plural = "Purchase_Info"
 
-    purchase_date = models.DateField(blank=True, default="")
-    price = models.FloatField(validators=[MinValueValidator(0)], blank=True, default="")
+    purchase_date = models.DateField(blank=True, null=True)
+    price = models.FloatField(validators=[MinValueValidator(0)], null=True, blank=True)
 
     def __str__(self):
         return f'{self.purchase_date}'
@@ -132,20 +145,20 @@ class Book(models.Model):
     height = models.FloatField(validators=[MinValueValidator(0.01)], blank=True, null=True)
     width = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0.01)])
     thickness = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0.01)])
-    cover = models.ImageField(default='https://i.ibb.co/tKtFPgr/blank-profile-picture-g9a1ddb035-640.png', upload_to='avatars/')
+    cover = models.CharField(max_length=150, default='https://i.ibb.co/s2THm06/no-image-icon-23480.jpg')
     # find cover
 
     # content info
-    categories = MultiSelectField(choices=CATEGORY_CHOICES, blank=True, max_choices=100, max_length=40, null=True)
-    description = models.CharField(max_length=300, blank=True, null=True)
+    categories = MultiSelectField(choices=CATEGORY_CHOICES, blank=True, max_choices=30, max_length=600, null=True)
+    description = models.CharField(max_length=1000, blank=True, null=True)
     tags = models.ManyToManyField(Tag, blank=True, related_name='book')
 
     # purchase info
     purchase_info = models.OneToOneField(PurchaseInfo, on_delete=models.CASCADE, null=True, blank=True, related_name='book')
 
     # user personal info
-    rating = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
-    notes = models.CharField(max_length=300, blank=True, null=True)
+    rating = models.CharField(max_length=9, choices=RATING_CHOICES, blank=True, null=True)
+    notes = models.CharField(max_length=1000, blank=True, null=True)
 
     update = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -157,10 +170,11 @@ class Book(models.Model):
 class Collection(models.Model):
     name = models.CharField(max_length=20, choices=COLLECTION_CHOICES)
     owner = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='collection')
-    books = models.ManyToManyField(Book, blank=True)
+    books = models.ManyToManyField(Book, blank=True, null=True, related_name='collection')
 
     def __str__(self):
         return f"{str(self.owner)}: {self.name}"
+
 
     def get_books_number(self):
         return self.books.all().count()
@@ -182,6 +196,38 @@ class Collection(models.Model):
     def get_books_read_number(self):
         read_info = self.books.exclude(read_info__isnull=True).values_list('read_info')
         return len(set(read_info.values_list('volume')))
+
+    def get_authors(self):
+        authors = None
+
+        for book in self.books.all():
+            new_authors = book.authors.all()
+            if new_authors and authors:
+                authors = authors.union(new_authors)
+            elif new_authors:
+                authors = new_authors
+
+        return authors
+
+    def get_series(self):
+        series = []
+
+        for book in self.books.all():
+            new_series = book.series
+            if new_series:
+                series.append(new_series)
+
+        return series
+
+    def get_publisher(self):
+        publisher = []
+
+        for book in self.books.all():
+            new_publisher = book.publisher
+            if new_publisher:
+                publisher.append(new_publisher)
+
+        return publisher
 
 
 class ReadInfo(models.Model):

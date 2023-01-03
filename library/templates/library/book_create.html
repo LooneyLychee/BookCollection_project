@@ -1,9 +1,450 @@
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ book_form.as_p }}
-    {{ authors_form.as_p }}
-    {{ publisher_form.as_p }}
-    {{ series_form.as_p }}
-    {{ purchase_form.as_p }}
-    <input type="submit" />
+{% extends 'general/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <form action="" method="POST" class="ui form" enctype='multipart/form-data'>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- image, title, collections, authors, series and volume -->
+        <div class="form-row mt-2 justify-content-center mt-4">
+            <div class="image content justify-content-center align-items-center col-sm-3 mt-2 info-update">
+                <!-- image -->
+                <div class="image-preview align-items-center justify-content-center">
+                    <div class="actual-image mr-ml-autor">
+                        {% if book_form.cover %}
+                            <img class="cover-preview-style" src="{{ book_form.cover.value }}" alt="your image" />
+                        {% else %}
+                            <img class="cover-preview-style" src="https://i.ibb.co/s2THm06/no-image-icon-23480.jpg" alt="your image"/>
+                        {% endif %}
+                    </div>
+                    <div class="uploaded-image mr-2">
+                        <img class="file-upload-image cover-preview-style" src="#" alt="your image" />
+                    </div>
+                    <div class="default-image mr-ml-auto">
+                        <img class="cover-preview-style" src="https://i.ibb.co/s2THm06/no-image-icon-23480.jpg" alt="your image" />
+                    </div>
+                </div>
+
+                <!-- buttons -->
+                <div class="form-row">
+                    <button class="file-upload-btn cover-btn mt-2" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button>
+                    <input class="file-upload-input" type='file' name="book-image" id="id_book-image" onchange="readURL(this);" accept="image/*" />
+                </div>
+                <div class="form-row">
+                    <button type="button" onclick="removeUpload()" class="mt-2 remove-btn cover-btn">Set default</button>
+                </div>
+            </div>
+
+            <!--title, collections, authors, series and volume -->
+            <div class="col-sm-8 mr-6">
+                <!-- collections -->
+                <div class="form-row mt-2">
+                    <div class="col-sm ml-2 mr-2 form-group">
+                        {{ book_form.collections.label_tag }}
+                        {% if book_form.is_bound %}
+                            {% if book_form.collections.errors %}
+                                <div class=" is-invalid">
+                                    {% for checkbox in book_form.collections %}
+                                        <label class="btn btn-dark">
+                                            {{ checkbox.tag }} {{ checkbox.choice_label }}
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                                {% for error in book_form.collections.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class=" is-invalid">
+                                    {% for checkbox in book_form.collections %}
+                                        <label class="btn btn-dark">
+                                            {{ checkbox.tag }} {{ checkbox.choice_label }}
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class=" is-invalid">
+                                {% for checkbox in book_form.collections %}
+                                    <label class="btn btn-dark">
+                                        {{ checkbox.tag }} {{ checkbox.choice_label }}
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if book_form.collections.help_text %}
+                            <small class="form-text text-muted">{{ book_form.collections.help_text }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- title -->
+                <div class="form-row mt-2">
+                    <div class="col-sm ml-2 mr-2 form-group">
+                        {{ book_form.title.label_tag }}
+                        {% if book_form.is_bound %}
+                            {% if book_form.title.errors %}
+                                {% render_field book_form.title class="form-control is-invalid" %}
+                                {% for error in book_form.title.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {% render_field book_form.title class="form-control is-valid" %}
+                            {% endif %}
+                        {% else %}
+                            {% render_field book_form.title class="form-control" %}
+                        {% endif %}
+                        {% if book_form.title.help_text %}
+                            <small class="form-text text-muted">{{ book_form.title.help_text }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- authors-->
+                <div class="form-row mt-2 d-flex align-items-end">
+                    <div class="col-sm ml-2 mr-2 form-group">
+                        Authors:
+                        <div class="mb-1">
+                        {% for author in authors %}
+                            {{ author }}
+                            <button type="submit" class="btn btn-dark" name='remove-author' value="{{ author }}">×</button>,
+                        {% endfor %}
+                        </div>
+                        {% if authors_form.is_bound %}
+                            {% if authors_form.name.errors %}
+                                {% render_field authors_form.name class="form-control is-invalid" %}
+                                {% for error in authors_form.name.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {% render_field authors_form.name class="form-control is-valid" %}
+                            {% endif %}
+                        {% else %}
+                            {% render_field authors_form.name class="form-control" %}
+                        {% endif %}
+                        {% if authors_form.name.help_text %}
+                            <small class="form-text text-muted">{{ authors_form.name.help_text }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-auto ml-2 mr-2 d-flex form-group justify-content-center mt-1">
+                        <button type="submit" name='add-author' id="author-btn" class="btn btn-primary">Add author</button>
+                    </div>
+                </div>
+
+                <!-- series and volume -->
+                <div class="form-row mt-2">
+                    <div class="col-sm ml-2 mr-2 form-group">
+                        Series:
+                        {% if series_form.is_bound %}
+                            {% if series_form.name.errors %}
+                                {% render_field series_form.name class="form-control is-invalid" %}
+                                {% for error in series_form.name.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {% render_field series_form.name class="form-control is-valid" %}
+                            {% endif %}
+                        {% else %}
+                            {% render_field series_form.name class="form-control" %}
+                        {% endif %}
+                        {% if series_form.name.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm ml-2 mr-2 form-group">
+                        Volume:
+                        {% if book_form.is_bound %}
+                            {% if book_form.volume.errors %}
+                                {% render_field book_form.volume class="form-control is-invalid" %}
+                                {% for error in book_form.volume.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {% render_field book_form.volume class="form-control is-valid" %}
+                            {% endif %}
+                        {% else %}
+                            {% render_field book_form.volume class="form-control" %}
+                        {% endif %}
+                        {% if book_form.volume.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- description -->
+        <div class="form-row mt-2 ml-4 mr-4  mt-4">
+            {{ book_form.description.label_tag }}
+            {% if book_form.is_bound %}
+                {% if book_form.description.errors %}
+                    {% render_field book_form.description class="form-control is-invalid" %}
+                    {% for error in book_form.description.errors %}
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    {% render_field book_form.description rows='2s' class="form-control is-valid" %}
+                {% endif %}
+            {% else %}
+                {% render_field book_form.description class="form-control" %}
+            {% endif %}
+            {% if book_form.description.help_text %}
+                <small class="form-text text-muted">{{ book_form.description.help_text }}</small>
+            {% endif %}
+        </div>
+
+        <!-- categories -->
+        <div class="form-row justify-content-center mt-2 ml-4 mr-4  mt-4">
+            <div class="panel-group w-100">
+                <div class="panel panel-default">
+                    <a class='text-light p-2' data-toggle="collapse" href="#collapse4">
+                        <div class="panel-heading bg-dark p-2 mb-2">
+                            {{ book_form.categories.label }}
+                        </div>
+                    </a>
+
+                    <div id="collapse4" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            {% if book_form.is_bound %}
+                                {% if book_form.categories.errors %}
+                                    <div class=" is-invalid">
+                                        {% for checkbox in book_form.categories %}
+                                            <label class="btn btn-dark">
+                                                {{ checkbox.tag }} {{ checkbox.choice_label }}
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                    {% for error in book_form.categories.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class=" is-invalid">
+                                        {% for checkbox in book_form.categories %}
+                                            <label class="btn btn-dark">
+                                                {{ checkbox.tag }} {{ checkbox.choice_label }}
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class=" is-invalid">
+                                    {% for checkbox in book_form.categories %}
+                                        <label class="btn btn-dark">
+                                            {{ checkbox.tag }} {{ checkbox.choice_label }}
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if book_form.categories.help_text %}
+                                <small class="form-text text-muted">{{ book_form.categories.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- cover-info -->
+        <div class="form-row justify-content-center mt-2 ml-4 mr-4  mt-4">
+            {% for field in book_form.visible_fields%}
+                {% if field.id_for_label == 'id_book-width' or field.id_for_label == 'id_book-height' or field.id_for_label == 'id_book-thickness' or field.id_for_label == 'id_book-page_count' %}
+                    <div class="col-sm ml-2 mr-2 form-group">
+                        {{ field.label_tag }}
+                        {% if book_form.is_bound %}
+                            {% if field.errors %}
+                                {% render_field field class="form-control is-invalid" %}
+                                {% for error in field.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {% render_field field class="form-control is-valid" %}
+                            {% endif %}
+                        {% else %}
+                            {% render_field field class="form-control" %}
+                        {% endif %}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- publisher-info  -->
+        <div class="form-row justify-content-center mt-2 ml-2 mr-2  mt-4">
+            {% for field in publisher_form.visible_fields%}
+                    <div class="col-sm ml-2 mr-2 form-group">
+                        Publisher {{ field.label_tag }}
+                        {% if book_form.is_bound %}
+                            {% if field.errors %}
+                                {% render_field field class="form-control is-invalid" %}
+                                {% for error in field.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {% render_field field class="form-control is-valid" %}
+                            {% endif %}
+                        {% else %}
+                            {% render_field field class="form-control" %}
+                        {% endif %}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+            {% endfor %}
+            {% for field in book_form.visible_fields%}
+                {% if field.id_for_label == 'id_book-publication_date' or field.id_for_label == 'id_book-identifier'%}
+                    <div class="col-sm ml-2 mr-2 form-group">
+                        {{ field.label_tag }}
+                        {% if book_form.is_bound %}
+                            {% if field.errors %}
+                                {% render_field field class="form-control is-invalid" %}
+                                {% for error in field.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {% render_field field class="form-control is-valid" %}
+                            {% endif %}
+                        {% else %}
+                            {% render_field field class="form-control" %}
+                        {% endif %}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- purchase-info  -->
+        <div class="form-row justify-content-center mt-2 ml-2 mr-2  mt-4">
+            {% for field in purchase_form.visible_fields%}
+                    <div class="col-sm ml-2 mr-2 form-group">
+                        {{ field.label_tag }}
+                        {% if book_form.is_bound %}
+                            {% if field.errors %}
+                                {% render_field field class="form-control is-invalid" %}
+                                {% for error in field.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {% render_field field class="form-control is-valid" %}
+                            {% endif %}
+                        {% else %}
+                            {% render_field field class="form-control" %}
+                        {% endif %}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+            {% endfor %}
+        </div>
+
+        <!-- rating  -->
+        <div class="form-row justify-content-center mt-2 ml-2 mr-2  mt-4">
+            <div class="col-sm ml-2 mr-2 form-group">
+                {{ book_form.rating.label_tag }}
+                {% if book_form.is_bound %}
+                    {% if book_form.rating.errors %}
+                        <div class=" is-invalid">
+                            {% for checkbox in book_form.rating %}
+                                <label class="btn btn-dark">
+                                    {{ checkbox.tag }} {{ checkbox.choice_label }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                        {% for error in book_form.rating.errors %}
+                            <div class="invalid-feedback">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class=" is-invalid">
+                                    {% for checkbox in book_form.rating %}
+                                        <label class="btn btn-dark">
+                                            {{ checkbox.tag }} {{ checkbox.choice_label }}
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                    {% endif %}
+                {% else %}
+                    <div class=" is-invalid">
+                                {% for checkbox in book_form.rating %}
+                                    <label class="btn btn-dark">
+                                        {{ checkbox.tag }} {{ checkbox.choice_label }}
+                                    </label>
+                                {% endfor %}
+                            </div>
+                {% endif %}
+                        {% if book_form.rating.help_text %}
+                            <small class="form-text text-muted">{{ book_form.rating.help_text }}</small>
+                        {% endif %}
+                    </div>
+        </div>
+
+
+        <!-- notes  -->
+        <div class="form-row justify-content-center mt-2 ml-2 mr-2  mt-4">
+            {% for field in book_form.visible_fields%}
+                {% if field.id_for_label == 'id_book-notes' %}
+                    <div class="col-sm ml-2 mr-2 form-group">
+                        {{ field.label_tag }}
+                        {% if book_form.is_bound %}
+                            {% if field.errors %}
+                                {% render_field field class="form-control is-invalid" %}
+                                {% for error in field.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {% render_field field class="form-control is-valid" %}
+                            {% endif %}
+                        {% else %}
+                            {% render_field field class="form-control" %}
+                        {% endif %}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+
+        <div class="form-row justify-content-center mb-4 mt-2 ml-4 mr-4  mt-4">
+                <button type="submit" name="submit" class="btn btn-success update-profile-btn">Submit</button>
+                <button type="submit"  name='submit-default' class="btn btn-success submit-default">Submit</button>
+        </div>
+
 </form>
+{% endblock %}
